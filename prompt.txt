@@ -1,0 +1,344 @@
+===============================================================================
+  AI TOOL PROMPT LOG
+  Required by Project.pdf, "What You Need to Submit" item 4:
+    File Name: prompt.txt or prompt.docx
+    Contents:  Document the prompts or instructions used when interacting
+               with AI tools.
+===============================================================================
+
+  STATUS: IN PROGRESS -- this log is incomplete and will keep growing until
+  the project is submitted.
+
+  ABOUT THIS FILE
+  ---------------
+  Prompts are recorded in chronological order, as sent. Nothing here is
+  invented or reconstructed from memory.
+
+  ACCURACY -- read this before relying on the log:
+    Each prompt below carries a VERIFICATION line stating how closely it has
+    been checked against what was actually sent. Prompts are NOT uniformly
+    claimed to be verbatim. Where the author has identified a discrepancy, the
+    correction is applied and noted at that prompt.
+
+  Assistant responses are NOT reproduced here -- only the prompts and
+  instructions given, which is what the specification asks for.
+
+  COVERAGE -- this log does not yet cover every AI interaction:
+    * Claude (Anthropic) -- used for specification analysis, benchmark
+      research, and producing the planning package. Prompts recorded below.
+    * ChatGPT / Codex (OpenAI) -- used to review the project plan and to help
+      formulate follow-up instructions to Claude. Those prompts are NOT yet
+      recorded here. They must be added before submission.
+
+    Missing prompts have deliberately NOT been reconstructed or approximated.
+    An incomplete but truthful log is preferable to a complete but invented
+    one. Retrieve them from the original conversation history and append them.
+
+  MAINTENANCE: append each new prompt as it is sent, from every AI tool used.
+  Do not reconstruct this file at the end of the project.
+
+  AI tools used : Claude (Anthropic); ChatGPT / Codex (OpenAI)
+  Log started   : 2026-09-08
+  Last updated  : 2026-09-08
+  Completeness  : PARTIAL -- see COVERAGE above
+
+===============================================================================
+  PROMPT 1  --  2026-09-08  --  Initial analysis request
+  Attachment: Project.pdf (current official project specification)
+  Context: reference-project files and course materials available in the
+           project panel
+
+  VERIFICATION: corrected by the author. One sentence that appeared in the
+  received copy but was not part of the prompt as sent has been removed from
+  the opening paragraph. The remainder is recorded as sent and has not been
+  further re-checked line by line.
+===============================================================================
+
+I want you to act as my technical partner for this university project.
+I uploaded:
+
+* the current official project specification — this is the highest-priority and authoritative source
+* files from a previous/reference project
+* some supporting files/code from the course/project environment
+
+Your job is to understand the current assignment completely and help me build a correct, working implementation.
+Important rules
+
+1. Do not start writing the full solution immediately.
+2. Read the entire current project specification first.
+3. Inspect all uploaded reference files and understand how the previous project was structured and implemented.
+4. The current project specification always overrides the old/reference project.
+5. Reuse ideas or code from the reference only when they are actually applicable to the current requirements.
+6. Do not assume that the old project and current project have identical requirements.
+7. Do not invent APIs, commands, file formats, libraries, inputs, outputs, or requirements.
+8. If something is unclear or missing, explicitly flag it.
+9. Prefer a simple, robust solution appropriate for a university course project. Do not overengineer.
+10. The final result must actually be runnable/testable in the required environment.
+
+First task — analysis only
+Before implementing anything, analyze everything I uploaded and give me:
+1. What this project is actually asking us to build
+Explain it to me in simple terms, as if I have not followed the course closely.
+2. Deliverables
+Give me a complete checklist of everything that needs to be implemented and submitted.
+3. Environment and setup
+Tell me exactly what environment I need in order to work on this:
+
+* operating system / VM if required
+* languages
+* libraries/packages
+* tools
+* build/compile commands
+* run commands
+* any setup files or configuration
+
+If the specification does not clearly say something, distinguish between:
+
+* explicitly required
+* inferred from the reference project
+* your recommendation
+
+4. Reference project analysis
+Explain which parts of the old/reference project appear relevant to the current assignment.
+Identify:
+
+* code/files that can probably be reused
+* code that needs modification
+* code that appears irrelevant
+* important differences between the old project and the current specification
+
+5. Proposed structure
+Show me what you think the final project directory/file structure should look like and briefly explain the role of each important file.
+6. Implementation plan
+Break the work into small, logical stages.
+For each stage include:
+
+* what we will implement
+* what files will be created/modified
+* how we will test it
+* what output/result will prove that the stage works
+
+Order the stages so that we can get a minimal working version as early as possible, and then improve it incrementally.
+7. Risks / unclear points
+Tell me now if you see anything that could cause problems later, including missing files, unclear requirements, dependencies, environment issues, or assumptions made by the old project.
+Very important
+Do not dump a large amount of code yet.
+I want to understand the project structure first and make sure we are solving the correct problem.
+At the end, give me a section called:
+"What I should do right now"
+with the first 3–5 concrete actions I should take on my computer.
+Then stop and wait for me before starting the implementation.
+
+===============================================================================
+  RESPONSE TO CLARIFYING QUESTIONS  --  2026-09-08
+  The assistant asked two multiple-choice questions at the end of its reply
+  to Prompt 1. The selected answers were:
+===============================================================================
+
+Question: Which pair of benchmarks do you want to target?
+Answer selected: "Let me decide after baselines"
+
+Question: Want this analysis as a page you can keep and share with your
+          project partner?
+Answer selected: "No, chat is fine"
+
+===============================================================================
+  PROMPT 2  --  2026-09-08  --  Two-track split; VM audit requested
+
+  VERIFICATION: recorded as received in the conversation. Not independently
+  re-checked against the author's original copy.
+===============================================================================
+
+Important context update: my project partner has already set up and successfully used the course VM for previous course projects. We want to inspect and reuse the existing working environment instead of creating a duplicate or accidentally changing it.
+I am also uploading the three VM guides. They appear inconsistent: the older guides use `tangerine` and discuss copying the image, while the 2026 guide uses an assigned `ece882-xxx` account, a specific `naranja` server, and runs QEMU from `/scratch`. Therefore, do not assume which connection method is current. Treat the setup that my partner already uses, together with the assigned course account/CSV, as the working source of truth.
+Please change the next step into two parallel tracks:
+Track A — useful work that I can own immediately without changing the VM
+Using only the current specification and the exact uploaded reference/source files:
+
+1. Create a concise, complete specification checklist.
+2. Compare the candidate benchmarks `nbody`, `raytrace`, `pyflate`, and `deepcopy`.
+3. For each candidate, explain in simple language:
+   * what it computes;
+   * its main algorithms and data structures;
+   * likely hotspots, clearly labeled as hypotheses until profiling;
+   * possible software optimizations that preserve identical behavior;
+   * how correctness would be tested;
+   * possible hardware-acceleration targets;
+   * risks and missing information.
+4. Propose a minimal report and README skeleton that follows the current specification.
+5. Create a benchmark-selection rubric, but do not select the final pair yet.
+6. Identify which uploaded files are from the exact course environment and which conclusions still require confirmation from the VM.
+
+Do not write the full implementation yet, and do not copy code from the reference project.
+Track B — minimal read-only audit of the existing VM
+Prepare one short, copy-paste-friendly command checklist that either my partner or I can run inside the already working VM. It should collect only the information necessary to establish the current state:
+
+* host versus QEMU guest identification;
+* OS and architecture;
+* Python and `python3-dbg` versions;
+* pyperformance version and supported CLI options;
+* available benchmark names;
+* exact location/version of the benchmark source;
+* perf version, permissions, and basic counter support;
+* existing project/repository directories and Git status;
+* availability of FlameGraph and HDL simulation tools.
+
+For every command, briefly explain what it checks. The audit must be read-only: no installation, upgrades, deletion, package replacement, source modification, QEMU launch, or creation of another environment. It must not print passwords, tokens, private keys, or other credentials.
+Do not assume that `nbody` and `raytrace` share a MAC bottleneck until the profiling data supports it. Do not select benchmarks solely from absolute runtime or standard deviation.
+At the end, give me:
+
+1. the concrete Track A work product;
+2. the short Track B command block;
+3. the exact outputs I should return to you;
+4. any questions that still need answers from my partner or the course staff.
+
+Then stop and wait for the VM information before installation, benchmark execution, or implementation.
+
+  --- NOTE ON PROMPT 2 -------------------------------------------------------
+  The three VM guides referred to in this prompt did not arrive. Only
+  Project.pdf was present. See docs/environment_notes.md.
+  ----------------------------------------------------------------------------
+
+===============================================================================
+  PROMPT 3  --  2026-09-08  --  Starter handoff package requested
+
+  VERIFICATION: recorded as received in the conversation. Not independently
+  re-checked against the author's original copy.
+===============================================================================
+
+Thank you. This is a strong analysis, but before waiting for the full VM audit, I want to turn the work already completed into a concrete starter package that I can review and share with my project partner.
+I have now re-attached the three VM guides. Please compare them and document their differences. Do not silently choose one procedure when the guides conflict. The current project specification remains authoritative, and anything still uncertain should be marked as requiring confirmation from the working VM or course staff.
+Please create a downloadable ZIP named:
+`project_starter_handoff.zip`
+It should contain the following files:
+
+1. `HANDOFF.md`
+   * A concise one-page project summary.
+   * What has already been analyzed.
+   * What is confirmed by the current specification.
+   * What remains unverified.
+   * The next five concrete steps.
+   * A clear distinction between completed work and future work.
+2. `docs/spec_checklist.md`
+   * A cleaned and well-formatted version of the complete specification checklist.
+   * Label every item as required, inferred, recommended, or unresolved.
+3. `docs/benchmark_candidates.md`
+   * Compare `nbody`, `raytrace`, `pyflate`, and `deepcopy`.
+   * Include purpose, algorithms, data structures, correctness strategy, possible software optimizations, possible hardware target, risks, and expected difficulty.
+   * Clearly label all unprofiled hotspots as hypotheses.
+   * Do not include unverified constants as facts.
+   * Do not select the final pair yet.
+4. `docs/environment_notes.md`
+   * Compare the three VM guides.
+   * Explain the `tangerine` versus `naranja` and local-copy versus remote-QEMU differences.
+   * State exactly what must be confirmed from the existing working environment.
+   * Do not provide installation or upgrade instructions yet.
+5. `templates/report_TEMPLATE.txt`
+   * A complete report template matching every section required by `Project.pdf`.
+   * Include placeholders for measured data, flame graphs, correctness evidence, optimization attempts, and hardware analysis.
+6. `templates/README_TEMPLATE.md`
+   * A minimal README template with placeholders.
+   * Do not invent final benchmark names, versions, commands, or results.
+7. `prompt.txt`
+   * Include the exact prompts/instructions I have sent during this project, not paraphrased summaries.
+   * Do not include fabricated prompts.
+   * Organize them chronologically.
+8. `scripts/vm_audit_minimal.sh`
+   * Replace the previous large audit with a short, safe, read-only audit.
+   * It should check only:
+      * whether we are inside the guest;
+      * OS and architecture;
+      * Python and `python3-dbg` versions;
+      * pyperformance version and available benchmarks;
+      * candidate benchmark source locations;
+      * perf version and one minimal counter smoke test;
+      * presence of FlameGraph tools;
+      * presence of an HDL simulator.
+   * It must not scan `/`, list the entire home directory, inspect unrelated Git repositories, print Git remotes, inspect credentials, install packages, upgrade anything, or modify the existing environment.
+   * It may create only one clearly named text output file in the current directory.
+9. `.gitignore`
+   * Ignore generated profiling results, `perf.data`, temporary files, virtual environments, waveform files, and build outputs.
+   * Do not ignore source files or final reports.
+
+Do not create optimized benchmark implementations, final execution scripts, HDL, fabricated measurements, or final conclusions yet.
+Before packaging, check that:
+
+* all files are internally consistent;
+* no requirement from the current specification is presented as optional;
+* recommendations are not presented as course requirements;
+* reference-project content is not copied verbatim;
+* every unknown is visibly marked as pending verification.
+
+After creating the ZIP, show me:
+
+1. the final directory tree;
+2. a short summary of each file;
+3. exactly what my partner will need to run next.
+
+Then stop and wait for the VM audit results.
+
+  --- NOTE ON PROMPT 3 -------------------------------------------------------
+  The re-attached VM guides again did not arrive; only Project.pdf was
+  present. No guide comparison was possible. See docs/environment_notes.md.
+  ----------------------------------------------------------------------------
+
+===============================================================================
+  PROMPT 4  --  2026-09-08  --  Corrections to the starter package (v2)
+
+  VERIFICATION: recorded as received in the conversation. Not independently
+  re-checked against the author's original copy.
+===============================================================================
+
+I reviewed the ZIP before sharing it with my partner. Please create `project_starter_handoff_v2.zip` with only the following corrections. Do not expand the package or begin implementation.
+1. Update `docs/environment_notes.md`
+The three guides still cannot be attached, so use this verified summary of their contents:
+
+* `How to Connect to Your CS Server VM.pdf` — dated May 2025:
+connect through Technion Harmony SASE VPN, verify access to `tangerine.cslcs.technion.ac.il`, and SSH using a personal username.
+* `How to Connect to Your QEMU on the Server.pdf` — dated June 2025:
+follow the SSH guide, copy the Ubuntu image from `tangerine:/scratch/yetsion/tmp/`, and then launch QEMU using the copied image.
+* `qemu-vm-guide.pdf` — dated May 2026:
+each `ece882-xxx` account has its own image under `/scratch/ece882-xxx` on an assigned `naranja` server listed in a CSV. It instructs students to SSH to that server, `cd` into the assigned `/scratch` directory, launch QEMU there, and perform all building inside the guest rather than on the host.
+* The current `Project.pdf` — dated August 2026:
+says to copy the image from `naranja10:/scratch/ece882-001/` to the local machine and then launch QEMU using a previous guide.
+
+Document this as a genuine unresolved conflict. Do not choose a procedure. The partner's known working commands can confirm the operational procedure, while `Project.pdf` and course staff remain authoritative for assignment requirements.
+Remove every statement saying that "the running system outranks the documentation." Replace it with:
+"The current specification and course staff govern the project requirements. The working VM is the source of truth only for the installed environment and available tools."
+2. Correct `prompt.txt`
+The first prompt is not currently verbatim. Remove the added sentence:
+"All relevant files are already available in the Context panel. Please inspect them before beginning the analysis."
+The original prompt starts:
+"I want you to act as my technical partner for this university project.
+I uploaded:"
+Do not claim that every prompt is verbatim unless it has been checked against the actual conversation.
+Also add an honest note that ChatGPT/Codex was used to review the project plan and help formulate follow-up instructions. Do not invent or reconstruct missing prompts. Mark the log as still in progress.
+3. Correct the audit description
+The script passed a Bash syntax check, but describe it as a "minimal non-destructive audit," not "strictly read-only," because it creates one output file and executes `perf stat /bin/true`.
+Do not otherwise enlarge the audit or add filesystem, credential, home-directory, or Git-repository scanning.
+4. Clarify the handoff status
+In `HANDOFF.md`, state prominently:
+
+* this is a planning and analysis package;
+* no implementation or benchmark execution has occurred;
+* the next technical milestone is the environment audit followed by one original baseline run;
+* the project is not yet runnable from this package alone.
+
+Keep the handoff concise and partner-friendly.
+Rebuild the corrected ZIP as `project_starter_handoff_v2.zip`, verify its contents, and provide a short changelog. Then stop.
+
+  --- NOTE ON PROMPT 4 -------------------------------------------------------
+  The guide PDFs again could not be attached. Verified summaries of their
+  contents were supplied in this prompt instead, and docs/environment_notes.md
+  was rewritten from those summaries.
+  ----------------------------------------------------------------------------
+
+===============================================================================
+  END OF LOG -- append new prompts below this line
+
+  REMINDER BEFORE SUBMISSION:
+    * Append the ChatGPT / Codex prompts (see COVERAGE at the top of this
+      file). They are not yet recorded.
+    * Do not reconstruct any prompt from memory. Retrieve it, or leave it out
+      and say so.
+===============================================================================

@@ -1,0 +1,440 @@
+===============================================================================
+  REPORT TEMPLATE  ->  rename to  report_<name_of_benchmark>.txt
+===============================================================================
+
+  HOW TO USE THIS TEMPLATE
+  ------------------------
+  * Replace every <ANGLE_BRACKET> placeholder.
+  * Delete every line beginning with "#" before submitting. Those are
+    instructions to you, not report content.
+  * Sections marked [REQUIRED] come from Project.pdf and must all be present.
+  * Sections marked [RECOMMENDED] are suggestions, NOT course requirements.
+    Delete them freely if you do not want them.
+  * Do not write a number into this report that you did not measure.
+    If a value is not yet measured, leave the placeholder in place.
+
+  REQUIRED SECTIONS, per Project.pdf ("What You Need to Submit" -> Contents):
+    1 Overview
+    2 Initial Analysis
+    3 Optimizations
+    4 Performance Comparison
+    5 Hardware Acceleration Proposal
+    6 Conclusion
+
+===============================================================================
+  <BENCHMARK NAME>  --  HW/SW Co-design Final Project
+===============================================================================
+
+  Authors        : <NAME 1>, <ID 1>
+                   <NAME 2>, <ID 2>
+  Course         : HW/SW Co-design
+  Repository     : <GIT REPOSITORY URL>
+  Date           : <DATE>
+  Report file    : report_<BENCHMARK>.txt
+  Script file    : script_<BENCHMARK>.sh
+
+
+===============================================================================
+  1. OVERVIEW                                                       [REQUIRED]
+===============================================================================
+# Project.pdf requires: "Description of the benchmark, libraries used, and data
+# structures employed."
+
+1.1 WHAT THE BENCHMARK COMPUTES
+-------------------------------
+# Plain language, roughly one paragraph. Assume a reader who knows Python and
+# computer architecture but has never seen this benchmark.
+
+    <DESCRIPTION>
+
+
+1.2 LIBRARIES AND MODULES USED
+------------------------------
+# List every library the benchmark relies on, including the harness itself, and
+# say what each contributes. Note which are pure Python and which are compiled,
+# because that determines what you are allowed to optimize.
+
+    Library / module   | Role in the benchmark      | Pure Python or compiled?
+    -------------------+----------------------------+-------------------------
+    <NAME>             | <ROLE>                     | <WHICH>
+    <NAME>             | <ROLE>                     | <WHICH>
+
+
+1.3 DATA STRUCTURES EMPLOYED
+----------------------------
+# Exact Python types, not vague descriptions. State why each was chosen and any
+# property that matters for performance (mutability, contiguity, hashing).
+
+    Structure          | Exact type   | Purpose        | Performance-relevant property
+    -------------------+--------------+----------------+-----------------------------
+    <NAME>             | <TYPE>       | <PURPOSE>      | <PROPERTY>
+
+
+1.4 ALGORITHMS EMPLOYED
+-----------------------
+# What the benchmark actually does, algorithmically. Include complexity where
+# it is meaningful.
+
+    <ALGORITHM DESCRIPTION>
+    Complexity: <O(...) AND IN TERMS OF WHAT>
+
+
+1.5 TEST FLOW
+-------------
+# Trace the path from the harness entry point down to the innermost loop, so a
+# reader can follow the call chain in your flame graph.
+
+    <ENTRY POINT>
+      -> <FUNCTION>
+        -> <FUNCTION>
+          -> <INNERMOST LOOP: what it repeats>
+
+
+1.6 THIRD-PARTY DEPENDENCIES EXAMINED
+-------------------------------------
+# Project.pdf Instruction 1 asks you to dive into third-party libraries where
+# needed to understand the benchmark. Record what you looked into. Write "none
+# required" if that is genuinely the case, and say why.
+
+    <DEPENDENCY>: <WHAT YOU LEARNED THAT MATTERED>
+
+
+===============================================================================
+  2. INITIAL ANALYSIS                                               [REQUIRED]
+===============================================================================
+# Project.pdf requires: "Performance analysis, flame graphs, profiling data."
+
+2.1 MEASUREMENT METHODOLOGY
+---------------------------
+# Everything a reader needs to reproduce your numbers. Fill this in from the
+# environment audit, not from memory.
+
+    Environment        : <HOST OR GUEST; VM DETAILS>
+    OS / kernel        : <VALUE>
+    CPU model / cores  : <VALUE>
+    Cache sizes        : <VALUE>
+    RAM                : <VALUE>
+    Python build used  : <python3-dbg OR python3 -- STATE WHICH AND WHY>
+    Python version     : <VALUE>
+    pyperformance ver. : <VALUE>
+    perf version       : <VALUE>
+    Repetitions        : <VALUE>
+    Cache state between runs : <WHAT YOU DID, IF ANYTHING>
+    Other load on machine    : <WHAT YOU DID TO QUIESCE IT>
+
+
+2.2 BASELINE RESULTS -- UNMODIFIED BENCHMARK
+--------------------------------------------
+# Harness-reported timing first: it is the primary evidence for the 7% claim.
+
+    Harness-reported timing
+      Mean +/- std dev : <VALUE>
+      Number of runs   : <VALUE>
+      Loop calibration : <LOOPS PER RUN, IF REPORTED>
+
+# Then hardware/software counters. Use the counter set the course works with.
+# Write "<not supported>" verbatim where the counter is unavailable -- that is a
+# finding, not a gap.
+
+    Counter                | Value      | Notes
+    -----------------------+------------+---------------------------------
+    task-clock             | <VALUE>    |
+    context-switches       | <VALUE>    |
+    page-faults            | <VALUE>    |
+    cycles                 | <VALUE>    |
+    instructions           | <VALUE>    |
+    IPC                    | <VALUE>    |
+    cache-references       | <VALUE>    |
+    cache-misses           | <VALUE>    | <ABSOLUTE COUNT *AND* RATE>
+    branches               | <VALUE>    |
+    branch-misses          | <VALUE>    |
+    elapsed time           | <VALUE>    |
+
+# Note: a rising miss RATE alongside a falling total miss COUNT is not a
+# regression. Report both, and interpret them together.
+
+
+2.3 FLAME GRAPH
+---------------
+    File           : <PATH TO .svg>
+    How generated  : <EXACT COMMAND PIPELINE>
+    Sampling freq  : <VALUE>
+
+    What it shows:
+    <DESCRIPTION -- WIDEST FRAMES, DEEPEST STACKS, WHAT SURPRISED YOU>
+
+    Limitations of this flame graph:
+    <e.g. WHICH FRAMES ARE RESOLVED AND WHICH ARE NOT, AND WHY>
+
+
+2.4 IDENTIFIED BOTTLENECKS
+--------------------------
+# Rank them. Each MUST cite specific profiling evidence. A bottleneck you
+# believe in but cannot point to in the data is a hypothesis, not a finding --
+# label it as such.
+
+    Rank | Bottleneck        | Evidence (which frame, what % , which counter)
+    -----+-------------------+------------------------------------------------
+    1    | <BOTTLENECK>      | <EVIDENCE>
+    2    | <BOTTLENECK>      | <EVIDENCE>
+    3    | <BOTTLENECK>      | <EVIDENCE>
+
+    Share of runtime attributable to the top bottleneck: <VALUE>
+    # This number sets the Amdahl's-law ceiling for section 5.6. Record it.
+
+
+===============================================================================
+  3. OPTIMIZATIONS                                                  [REQUIRED]
+===============================================================================
+# Project.pdf requires: "Description of improvements made, including any
+# external libraries or algorithms used."
+#
+# Repeat the block below once per optimization attempt.
+# Keep the attempts that FAILED. [RECOMMENDED, not required.] A failed
+# optimization with a correct explanation of why it failed demonstrates more
+# understanding than a lucky success, and you will be asked about it.
+
+-------------------------------------------------------------------------------
+OPTIMIZATION <N>: <SHORT NAME>
+-------------------------------------------------------------------------------
+
+3.<N>.1  HYPOTHESIS
+    Targets bottleneck : <WHICH ONE FROM 2.4>
+    Predicted effect   : <WHAT YOU EXPECTED AND WHY>
+
+3.<N>.2  CODE CHANGE
+    # Minimal before/after. Show the changed lines, not whole files.
+
+    Before:
+        <CODE>
+
+    After:
+        <CODE>
+
+3.<N>.3  MECHANISM
+    # Why this should be faster, at the level of what the interpreter or the
+    # hardware actually does. "It is faster" is not a mechanism.
+    <EXPLANATION>
+
+3.<N>.4  EXTERNAL LIBRARIES OR ALGORITHMS USED
+    <NAME AND WHAT IT PROVIDES, OR "none">
+
+3.<N>.5  BEHAVIOUR PRESERVATION                              [RECOMMENDED]
+    # Not required by Project.pdf. Strongly advised: state precisely what
+    # "unchanged behaviour" means for this optimization.
+    Output identical?     : <BIT-IDENTICAL / IDENTICAL WITHIN TOLERANCE / CHANGED>
+    If not bit-identical, what changes and why it is acceptable:
+        <EXPLANATION>
+
+3.<N>.6  CORRECTNESS EVIDENCE
+    Test performed : <EXACT COMMAND OR CHECK>
+    Result         : <PASS / FAIL, WITH THE ACTUAL OUTPUT>
+
+3.<N>.7  MEASURED RESULT
+    Mean +/- std dev : <VALUE>
+    Change vs baseline : <PERCENTAGE>
+    Verdict          : <KEPT / DISCARDED -- AND WHY>
+
+-------------------------------------------------------------------------------
+# ... repeat for each optimization ...
+-------------------------------------------------------------------------------
+
+
+===============================================================================
+  4. PERFORMANCE COMPARISON                                         [REQUIRED]
+===============================================================================
+# Project.pdf requires: "Show how performance improved after optimizations."
+# Instruction 6 requires concrete data comparing optimized to original.
+
+4.1 SUMMARY TABLE
+-----------------
+    Variant              | Mean +/- std dev | Speedup vs base | >= 7% ?
+    ---------------------+------------------+-----------------+---------
+    <BASELINE>           | <VALUE>          | 1.00x           | --
+    <OPT 1>              | <VALUE>          | <VALUE>         | <YES/NO>
+    <OPT 2>              | <VALUE>          | <VALUE>         | <YES/NO>
+    <BEST>               | <VALUE>          | <VALUE>         | <YES/NO>
+
+    How improvement was computed: <STATE THE FORMULA YOU USED>
+
+
+4.2 COUNTER COMPARISON
+----------------------
+    Counter            | Baseline | Optimized | Change
+    -------------------+----------+-----------+--------
+    <COUNTER>          | <VALUE>  | <VALUE>   | <VALUE>
+
+    Interpretation:
+    <WHAT THE COUNTER CHANGES TELL YOU ABOUT *WHY* IT GOT FASTER>
+
+
+4.3 FLAME GRAPH COMPARISON
+--------------------------
+    Before : <PATH>
+    After  : <PATH>
+    What moved: <WHICH FRAMES SHRANK, WHICH GREW>
+
+
+4.4 THREATS TO VALIDITY                                      [RECOMMENDED]
+--------------------------------------------------------------------------
+# Not required by Project.pdf. Advised: name the reasons your numbers could
+# mislead, before someone else does.
+
+    Measurement noise      : <MAGNITUDE VS THE 7% THRESHOLD>
+    Loop calibration       : <IF THE HARNESS CALIBRATES ITERATION COUNTS,
+                              TOTALS ACROSS VARIANTS MAY NOT BE COMPARABLE>
+    Scope of counters      : <WHAT THE PROFILED PROCESS INCLUDES BEYOND THE
+                              BENCHMARK ITSELF>
+    Python build           : <DEBUG VS RELEASE, AND WHETHER IT AFFECTS THE CLAIM>
+    Other                  : <ANYTHING ELSE>
+
+
+===============================================================================
+  5. HARDWARE ACCELERATION PROPOSAL                                 [REQUIRED]
+===============================================================================
+# Project.pdf Instruction 7 requires ALL SEVEN of 5.2 - 5.8 below.
+# Note explicitly: synthesis, fabrication and physical testing are NOT
+# required. A complete and logically consistent design IS.
+
+5.1 TARGET COMPONENT AND WHY
+----------------------------
+    Component selected : <WHAT>
+    Evidence from section 2.4 : <WHICH BOTTLENECK, WHAT SHARE OF RUNTIME>
+
+
+5.2 INPUTS AND OUTPUTS                                            [REQUIRED]
+----------------------------------------------------------------------------
+# Must define data widths, interfaces, and expected operating frequency.
+
+    Signal        | Dir | Width | Description
+    --------------+-----+-------+--------------------------------------
+    <NAME>        | in  | <N>   | <DESCRIPTION>
+    <NAME>        | out | <N>   | <DESCRIPTION>
+
+    Interface / protocol      : <WHAT>
+    Expected operating freq.  : <VALUE> -- basis: <HOW YOU ARRIVED AT IT>
+
+
+5.3 HARDWARE ARCHITECTURE                                         [REQUIRED]
+----------------------------------------------------------------------------
+# Must include the main datapath AND the control logic.
+
+    Datapath:
+        <STAGES, WIDTHS, WHAT FLOWS THROUGH>
+
+    Control logic:
+        <FSM STATES AND TRANSITIONS, OR EQUIVALENT>
+
+    Internal storage:
+        <REGISTERS / TABLES / BUFFERS AND THEIR SIZES>
+
+    Throughput / latency:
+        <CYCLES PER OPERATION, AND ANY PIPELINING>
+
+
+5.4 BLOCK DIAGRAM                                                 [REQUIRED]
+----------------------------------------------------------------------------
+# Must show the accelerator, its interfaces, and its integration into the
+# overall system. ASCII is acceptable; an image file referenced by path is too.
+
+    <DIAGRAM OR PATH TO DIAGRAM FILE>
+
+
+5.5 HARDWARE / SOFTWARE INTERFACE                                 [REQUIRED]
+----------------------------------------------------------------------------
+# Must describe required software modifications, APIs, drivers, memory-mapped
+# interfaces, DMA transfers, or communication protocols.
+
+    Integration mechanism : <WHAT>
+    Software changes      : <WHAT MUST CHANGE IN THE PYTHON / RUNTIME / DRIVER>
+    Data movement         : <HOW OPERANDS REACH THE UNIT AND RESULTS RETURN>
+    Invocation flow       :
+        1. <STEP>
+        2. <STEP>
+        3. <STEP>
+
+
+5.6 ACCELERATION JUSTIFICATION                                    [REQUIRED]
+----------------------------------------------------------------------------
+# Must explain why this component is a good candidate, estimate the expected
+# improvement, and DISCUSS THE ASSUMPTIONS USED.
+
+    Why this component:
+        <ARGUMENT, TIED TO MEASURED DATA FROM SECTION 2.4>
+
+    Estimated improvement:
+        <VALUE>
+
+    Ceiling imposed by the hotspot's share of runtime:
+        <MAX POSSIBLE SPEEDUP GIVEN THE SHARE RECORDED IN 2.4>
+
+    Assumptions made:
+        1. <ASSUMPTION>
+        2. <ASSUMPTION>
+        3. <ASSUMPTION>
+
+
+5.7 PERFORMANCE / AREA / POWER TRADE-OFFS                         [REQUIRED]
+----------------------------------------------------------------------------
+    Performance : <EXPECTED GAIN AND UNDER WHAT CONDITIONS>
+    Area        : <ROUGH COMPLEXITY: WHAT DOMINATES THE AREA>
+    Frequency   : <WHAT LIMITS THE CRITICAL PATH>
+    Power       : <WHEN IT COSTS MORE, WHEN IT SAVES ENERGY OVERALL>
+    When this unit is NOT worth it:
+                  <BE HONEST -- THIS QUESTION GETS ASKED>
+
+
+5.8 HDL IMPLEMENTATION                                            [REQUIRED]
+----------------------------------------------------------------------------
+# Project.pdf: implement in Verilog, SystemVerilog, or PyXHDL. Other HDLs or
+# frameworks only with prior instructor approval.
+
+    Language used  : <WHICH>
+    Source files   : <LIST WITH PATHS>
+    Module summary :
+        <MODULE NAME>: <WHAT IT DOES>
+
+    Verification performed:                                  [RECOMMENDED]
+    # Simulation is not stated as a requirement in Project.pdf. Confirm with
+    # course staff whether it is expected. If you do simulate, record it here.
+        Testbench file : <PATH>
+        Simulator      : <WHICH>
+        How to run     : <COMMAND>
+        Result         : <ACTUAL OUTPUT>
+        Reference model: <WHAT YOU CHECKED AGAINST>
+
+
+===============================================================================
+  6. CONCLUSION                                                     [REQUIRED]
+===============================================================================
+# Project.pdf requires: "Summarize the impact of the optimizations and hardware
+# acceleration."
+
+6.1 WHAT WORKED
+    <SUMMARY, WITH THE HEADLINE NUMBER>
+
+6.2 WHAT DID NOT WORK, AND WHY
+    <SUMMARY -- THE "WHY" IS THE PART THAT DEMONSTRATES UNDERSTANDING>
+
+6.3 COMBINED IMPACT OF SOFTWARE AND PROPOSED HARDWARE
+    <SUMMARY>
+
+6.4 WHAT WE WOULD DO WITH MORE TIME                          [RECOMMENDED]
+    <SUMMARY>
+
+
+===============================================================================
+  APPENDIX                                                     [RECOMMENDED]
+===============================================================================
+
+A. FILES PRODUCED
+    Results directory : <PATH>
+    Flame graphs      : <PATHS>
+    Raw profiling data: <PATHS>
+
+B. HOW TO REPRODUCE
+    <EXACT COMMANDS>
+
+===============================================================================
+  END OF REPORT
+===============================================================================
