@@ -1,0 +1,168 @@
+===============================================================
+ PREFLIGHT -- can we prepare for a baseline run?
+ generated: Sat Sep 12 17:36:38 UTC 2026
+===============================================================
+
+=== A. IDENTITY AND PRIVILEGE ===
+--- perf_event_paranoid is 4; on Ubuntu-family kernels any value >=3
+--- blocks perf_event_open for unprivileged users entirely. The audit's
+--- counter smoke test SUCCEEDED, so it must have run privileged.
+--- This confirms which.
+user        : root (uid 0)
+groups      : root
+verdict     : running as root -> perf works, apt will work
+
+=== B. DISK SPACE ===
+--- setup needs room for a venv, the harness, its internal venvs, and
+--- recorded profiles. perf.data from one run can reach tens of MB. ---
+Filesystem      Size  Used Avail Use% Mounted on
+/dev/root        22G  2.6G   19G  12% /
+/dev/root        22G  2.6G   19G  12% /
+/dev/root        22G  2.6G   19G  12% /
+/dev/root        22G  2.6G   19G  12% /
+
+inode usage on / :
+Filesystem      Inodes IUsed   IFree IUse% Mounted on
+/dev/root      2854656 95289 2759367    4% /
+
+=== C. MEMORY ===
+--- the audit showed 1 vCPU; memory was not captured ---
+               total        used        free      shared  buff/cache   available
+Mem:           3.8Gi       107Mi       3.4Gi       0.0Ki       393Mi       3.7Gi
+Swap:             0B          0B          0B
+swap:
+
+=== D. NETWORK REACHABILITY ===
+--- pip and git clone both require outbound HTTPS ---
+DNS resolution:
+2a04:4e42:200::223 pypi.org
+2a04:4e42:400::223 pypi.org
+2a04:4e42::223  pypi.org
+2a04:4e42:600::223 pypi.org
+20.217.135.5    github.com
+2620:2d:4002:1::102 archive.ubuntu.com
+2a06:bc80:0:1000::17 archive.ubuntu.com
+2620:2d:4002:1::103 archive.ubuntu.com
+2620:2d:4002:1::101 archive.ubuntu.com
+2a06:bc80:0:1000::18 archive.ubuntu.com
+2620:2d:4000:1::103 archive.ubuntu.com
+2a06:bc80:0:1000::16 archive.ubuntu.com
+2620:2d:4000:1::102 archive.ubuntu.com
+2620:2d:4000:1::101 archive.ubuntu.com
+
+HTTPS reachability (15s timeout each):
+  https://pypi.org/simple/                 -> HTTP 200
+  https://github.com/brendangregg/FlameGraph.git/info/refs?service=git-upload-pack -> HTTP 200
+  http://archive.ubuntu.com/ubuntu/        -> HTTP 200
+
+=== E. APT AVAILABILITY (SIMULATED -- NOTHING IS INSTALLED) ===
+--- 'apt-get -s' simulates only; it makes no changes ---
+--- python3-dbg ---
+python3-dbg:
+  Installed: (none)
+  Candidate: 3.10.6-1~22.04.1
+--- python3.10-venv ---
+python3.10-venv:
+  Installed: (none)
+  Candidate: 3.10.12-1~22.04.16
+--- git ---
+git:
+  Installed: 1:2.34.1-1ubuntu1.17
+  Candidate: 1:2.34.1-1ubuntu1.17
+
+--- simulated install (dry run) ---
+Conf libbabeltrace1 (1.5.8-2build1 Ubuntu:22.04/jammy [amd64])
+Conf libdebuginfod1 (0.186-1ubuntu0.1 Ubuntu:22.04/jammy-updates, Ubuntu:22.04/jammy-security [amd64])
+Conf libipt2 (2.0.5-1 Ubuntu:22.04/jammy [amd64])
+Conf libsource-highlight-common (3.1.9-4.1build2 Ubuntu:22.04/jammy [all])
+Conf libboost-regex1.74.0 (1.74.0-14ubuntu3 Ubuntu:22.04/jammy [amd64])
+Conf libsource-highlight4v5 (3.1.9-4.1build2 Ubuntu:22.04/jammy [amd64])
+Conf gdb (12.1-0ubuntu1~22.04.2 Ubuntu:22.04/jammy-updates, Ubuntu:22.04/jammy-security [amd64])
+Conf libpython3.10-dbg (3.10.12-1~22.04.16 Ubuntu:22.04/jammy-updates, Ubuntu:22.04/jammy-security [amd64])
+Conf python3-pip-whl (22.0.2+dfsg-1ubuntu0.7 Ubuntu:22.04/jammy-updates, Ubuntu:22.04/jammy-security [all])
+Conf python3-setuptools-whl (59.6.0-1.2ubuntu0.22.04.3 Ubuntu:22.04/jammy-updates, Ubuntu:22.04/jammy-security [all])
+Conf python3.10-dbg (3.10.12-1~22.04.16 Ubuntu:22.04/jammy-updates, Ubuntu:22.04/jammy-security [amd64])
+Conf python3.10-venv (3.10.12-1~22.04.16 Ubuntu:22.04/jammy-updates, Ubuntu:22.04/jammy-security [amd64])
+Conf libc6-dbg (2.35-0ubuntu3.13 Ubuntu:22.04/jammy-updates, Ubuntu:22.04/jammy-security [amd64])
+Conf libpython3-dbg (3.10.6-1~22.04.1 Ubuntu:22.04/jammy-updates [amd64])
+Conf python3-dbg (3.10.6-1~22.04.1 Ubuntu:22.04/jammy-updates [amd64])
+
+=== F. PERF BINARY LOCATION ===
+--- the audit reported the scripts dir missing; find the real binary ---
+perf on PATH : /usr/bin/perf
+file type    : Bourne-Again shell script, ASCII text executable
+(wrapper script -- contents follow)
+    #!/bin/bash
+    full_version=`uname -r`
+    
+    # First check for a fully qualified version.
+    this="/usr/lib/linux-tools/$full_version/`basename $0`"
+    if [ -f "$this" ]; then
+    	exec "$this" "$@"
+    fi
+    
+    # Removing flavour from version i.e. generic or server.
+    flavour_abi=${full_version#*-}
+    flavour=${flavour_abi#*-}
+    version=${full_version%-$flavour}
+    this="$0_$version"
+    if [ -f "$this" ]; then
+    	exec "$this" "$@"
+    fi
+    
+    # Before saucy kernels we had no flavour linkage.
+    if dpkg --compare-versions "$version" lt "3.11.0"; then
+    	flavour=''
+    else
+    	flavour="-$flavour"
+    fi
+    # Hint at the cloud tools if they exist (trusty and later)
+    if dpkg --compare-versions "$version" ge "3.13.0"; then
+    	cld=""
+    else
+    	cld=":"
+    fi
+    # Work out if this is an LTS backport or not.
+    codename=`lsb_release -cs`
+    case "$codename" in
+    precise)	base='3.2.0-9999' ;;
+    trusty)		base='3.13.0-9999' ;;
+    *)		base='' ;;
+    esac
+    std=""
+    lts=":"
+    if [ "$base" != "" ]; then
+
+versioned tool directories:
+/usr/lib/linux-kvm-tools-5.15.0-1080
+/usr/lib/linux-kvm-tools-5.15.0-1103
+/usr/lib/linux-kvm-tools-5.15.0-1104
+/usr/lib/linux-tools
+/usr/lib/linux-tools-5.15.0-186
+candidate scripts directories:
+  absent : /usr/libexec/perf-core
+  absent : /usr/share/perf-core
+  absent : /usr/lib/perf-core
+
+=== G. DOES THE FLAMEGRAPH PIPELINE WORK? ===
+--- the missing scripts dir breaks 'perf script report <engine>'.
+--- It should NOT break plain 'perf script', which is a builtin and is
+--- what the FlameGraph tool chain consumes. This settles it. ---
+[1/3] perf record on /bin/true (into a temp dir):
+Couldn't record kernel reference relocation symbol
+Symbol resolution may be skewed if relocation was used (e.g. kexec).
+Check /proc/kallsyms permission or run as root.
+      perf.data created, 8.0K
+[2/3] perf script raw dump (first 10 lines):
+[3/3] verdict:
+      PASS -- plain 'perf script' works.
+      The FlameGraph script pipeline is viable.
+      The missing perf-core scripts dir is NOT blocking.
+
+=== H. SAMPLE-RATE TUNABLE (READ ONLY) ===
+--- already 100000 per the audit; confirming no change is needed ---
+perf_event_max_sample_rate : 100000
+
+===============================================================
+ PREFLIGHT COMPLETE -- nothing was installed or changed
+===============================================================
