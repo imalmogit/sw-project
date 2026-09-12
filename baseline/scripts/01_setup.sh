@@ -70,19 +70,38 @@ PYEOF
 # ---------------------------------------------------------------------------
 say "Step 1/5 -- system packages"
 
+# Ask dpkg, not the interpreter.
+#
+# BUG FIXED HERE: the previous version tested `python3 -c 'import venv'`.
+# On Ubuntu that SUCCEEDS even when python3.10-venv is absent -- the venv
+# module ships in the stdlib, while the package provides the ensurepip
+# wheels that `python3 -m venv` actually needs. The check therefore passed,
+# the package was never queued, and step 3 would have failed with
+# "ensurepip is not available". Preflight confirmed python3.10-venv is NOT
+# installed on this VM, so that failure was guaranteed.
+pkg_installed() {
+    dpkg-query -W -f='${db:Status-Status}' "$1" 2>/dev/null | grep -qx installed
+}
+
 NEED=()
-command -v git >/dev/null 2>&1 || NEED+=(git)
-command -v python3-dbg >/dev/null 2>&1 || NEED+=(python3-dbg)
-python3 -c 'import venv' >/dev/null 2>&1 || NEED+=(python3.10-venv)
-# python3-dbg needs the venv module too; the package provides it for both.
-if command -v python3-dbg >/dev/null 2>&1; then
-    python3-dbg -c 'import venv' >/dev/null 2>&1 || NEED+=(python3.10-venv)
-fi
+pkg_installed git             || NEED+=(git)
+pkg_installed python3-dbg     || NEED+=(python3-dbg)
+pkg_installed python3.10-venv || NEED+=(python3.10-venv)
 
 if [ "${#NEED[@]}" -eq 0 ]; then
     echo "  all required system packages already present -- nothing to install"
 else
-    printf '  to install: %s\n' "${NEED[*]}"
+    printf '  requested: %s\n' "${NEED[*]}"
+    echo
+    echo "  NOTE: apt will also pull dependencies. On Ubuntu 22.04, python3-dbg"
+    echo "  brings in gdb, libc6-dbg, python3.10-dbg, libpython3.10-dbg and"
+    echo "  several support libraries -- roughly a dozen packages, not three."
+    echo "  All are additive. Nothing is removed, replaced or upgraded."
+    echo
+    echo "  Simulating first so you can see the real footprint:"
+    apt-get -s install "${NEED[@]}" 2>&1 | grep -E '^[0-9]+ upgraded|newly installed|After this operation' \
+        | sed 's/^/    /'
+    echo
     echo "  this runs: apt-get update && apt-get install -y ${NEED[*]}"
     echo "  (apt-get update refreshes package lists under /var/lib/apt/lists)"
     if confirm "  proceed with the apt install?"; then
@@ -92,6 +111,17 @@ else
         die "declined. Nothing was installed."
     fi
 fi
+
+# Functional check: does `python3 -m venv` actually work now? `import venv`
+# is not sufficient evidence -- see the note above.
+TESTVENV="$(mktemp -d)/venvcheck"
+if python3 -m venv "$TESTVENV" >/dev/null 2>&1; then
+    echo "  verified: python3 -m venv works"
+else
+    warn "python3 -m venv still fails. Report the output of:
+             python3 -m venv /tmp/probe"
+fi
+rm -rf "${TESTVENV%/*}"
 
 command -v python3-dbg >/dev/null 2>&1 \
     || die "python3-dbg still not available after install -- report this"
