@@ -221,3 +221,6 @@ Thumbs.db
 # it. Add explicit exceptions here if a benchmark requires an input archive,
 # for example:
 #   !benchmarks/**/data/*
+
+# third-party tooling, cloned not authored
+tools/FlameGraph/

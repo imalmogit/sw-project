@@ -1,0 +1,10 @@
+Performance version: 1.14.0
+Python version: 3.10.12 (64-bit)
+Report on Linux-5.15.0-1103-kvm-x86_64-with-glibc2.35
+Number of logical CPUs: 1
+Start date: 2026-09-12 18:21:17.415313
+End date: 2026-09-12 18:22:02.373232
+
+### nbody ###
+Mean +- std dev: 478 ms +- 7 ms
+

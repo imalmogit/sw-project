@@ -1,0 +1,15 @@
+Environment captured: Sun Sep 13 13:46:37 UTC 2026
+host/guest    : kvm
+os            : Ubuntu 22.04.5 LTS
+kernel        : Linux 5.15.0-1103-kvm x86_64
+cpu           : Intel(R) Xeon(R) CPU E5-2630 v3 @ 2.40GHz
+vcpus         : 1
+python3       : Python 3.10.12 (main, Aug 31 2026, 10:18:17) [GCC 11.4.0] 
+python3-dbg   : Python 3.10.12 (main, Aug 31 2026, 10:18:17) [GCC 11.4.0] 
+venv python   : Python 3.10.12 (main, Aug 31 2026, 10:18:17) [GCC 11.4.0] 
+pyperformance : pyperformance 1.14.0
+perf          : perf version 5.15.200
+paranoid      : 4
+max_sample_rate : 100000
+flamegraph    : /root/sw-project/tools/FlameGraph
+project root  : /root/sw-project
