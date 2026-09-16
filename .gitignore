@@ -224,3 +224,24 @@ Thumbs.db
 
 # third-party tooling, cloned not authored
 tools/FlameGraph/
+
+# perf intermediates — large and fully regenerable from perf.data
+perf_script.txt
+perf_script*.txt
+perf_script.err
+out.folded
+*.folded
+perf.data
+perf.data.*
+
+# perf intermediates -- large and fully regenerable from perf.data
+perf_script*.txt
+perf_script*.err
+perf.data
+perf.data.*
+out.folded
+*.folded
+
+# tree-view perf report: tens of thousands of lines of recursive expansion.
+# perf_report_flat.txt is the readable one and stays tracked.
+results/**/perf_report.txt
