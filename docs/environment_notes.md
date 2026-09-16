@@ -1,222 +1,188 @@
 # Environment Notes
 
-**Governing rule for this file:**
+**Revision 2 — 2026-09-16.** Supersedes revision 1. All conflicts that revision 1 left
+open are now closed by direct evidence or by course staff.
+
+**Governing rule:**
 
 > The current specification and course staff govern the project requirements. The
 > working VM is the source of truth only for the installed environment and available
 > tools.
 
-**This file contains no installation, upgrade, or setup instructions.** Those are
-withheld until the environment audit establishes what already exists.
-
-**No connection procedure is chosen here.** The four documents below conflict, and the
-conflict is genuine. It is documented, not resolved.
-
 ---
 
-## 1. The four documents
+## 1. The environment, as measured
 
-Summarized from the guides. The PDFs themselves could not be attached to the working
-session; the summaries below were supplied and verified by the project author.
+Every line below was read off the machine, not inferred. Source: `vm_audit`
+(2026-09-12), `preflight` (2026-09-12), and the baseline runs (2026-09-12 → 09-16).
 
-| # | Document | Date | Summary of contents |
-|---|---|---|---|
-| 1 | `How to Connect to Your CS Server VM.pdf` | **May 2025** | Connect through the Technion Harmony SASE VPN; verify access to `tangerine.cslcs.technion.ac.il`; SSH using a personal username. |
-| 2 | `How to Connect to Your QEMU on the Server.pdf` | **June 2025** | Follow the SSH guide; copy the Ubuntu image from `tangerine:/scratch/yetsion/tmp/`; launch QEMU using the copied image. |
-| 3 | `qemu-vm-guide.pdf` | **May 2026** | Each `ece882-xxx` account has its own image under `/scratch/ece882-xxx` on an assigned `naranja` server listed in a CSV. SSH to that server, `cd` into the assigned `/scratch` directory, launch QEMU **there**, and perform all building **inside the guest** rather than on the host. |
-| 4 | `Project.pdf` (current specification) | **August 2026** | Copy the image from `naranja10:/scratch/ece882-001/` **to the local machine**, then launch QEMU "using a previous guide". |
-
-Chronological order: 1 → 2 → 3 → 4. Document 4 is the most recent **and** is the
-authoritative specification for assignment requirements.
-
----
-
-## 2. What changes across the documents
-
-| Dimension | May 2025 (#1) | June 2025 (#2) | May 2026 (#3) | Aug 2026 (#4) |
-|---|---|---|---|---|
-| Server | `tangerine` | `tangerine` | assigned `naranja` host from a CSV | `naranja10` |
-| Account | personal username | personal username | `ece882-xxx` | `<your_username>` placeholder |
-| Image source path | — | `/scratch/yetsion/tmp/` | `/scratch/ece882-xxx` (own account) | `/scratch/ece882-001/` |
-| Where QEMU runs | — | from the copied image | **on the server**, in the assigned `/scratch` dir | **on the local machine** |
-| Where you build | — | — | **inside the guest**, not the host | not stated |
-| Access method | Harmony SASE VPN + SSH | SSH | SSH | `scp` |
-
-The `tangerine` → `naranja` change and the personal-username → `ece882-xxx` change are
-consistent with a **course infrastructure migration between the 2025 and 2026
-offerings**. That reading is plausible but is **not** confirmed by any document in hand,
-and it does not resolve the conflicts below.
-
----
-
-## 3. The unresolved conflicts
-
-### Conflict A — where QEMU actually runs
-
-**This is the central conflict, and it is between the two most recent documents.**
-
-| Position | Source | Date |
-|---|---|---|
-| Launch QEMU **on the server**, inside the assigned `/scratch` directory | `qemu-vm-guide.pdf` (#3) | May 2026 |
-| Copy the image **to the local machine** and launch it there | `Project.pdf` (#4) | August 2026 |
-
-**Why this is not settled by recency.** Document 4 is newer, but its own instruction is
-internally inconsistent: it says to copy the image to the local machine, and then says
-to launch QEMU "using a previous guide" — and the previous guide it would point to
-(#3, the only 2026 guide) says to launch **on the server**. Following document 4's
-Step 0 and then its Step 1 leads to two different machines.
-
-**Additional evidence that #4's setup page may be carried over from an earlier
-edition:** the worked example on that page profiles a benchmark that is **not on this
-project's approved benchmark list**. The page has demonstrably not been fully revised
-for this assignment.
-
-**Why it matters, concretely:**
-
-- Where results, flame graphs and recorded profiles land, and whose disk quota they
-  consume.
-- Whether profiling runs under **nested virtualization** — which bears directly on
-  whether hardware performance counters are available at all. That is the highest-impact
-  unknown in the whole audit.
-- Whether flame graph files must be copied back before they can be viewed.
-- Document 3's instruction to build inside the guest rather than on the host only has
-  its stated meaning under the server-side reading.
-
-### Conflict B — `tangerine` versus `naranja`
-
-| Position | Source | Date |
-|---|---|---|
-| `tangerine.cslcs.technion.ac.il` | #1, #2 | May–June 2025 |
-| An assigned `naranja` host, identified per-student via a CSV | #3 | May 2026 |
-| `naranja10` specifically | #4 | August 2026 |
-
-Migration is the natural reading. But #3 and #4 **do not agree with each other**: #3
-says the host is assigned per account and must be looked up in a CSV, while #4 names
-`naranja10` outright. Either `naranja10` is this account's assigned host, or it is an
-example carried over from one particular assignment. **Nothing available distinguishes
-these.**
-
-### Conflict C — the image source path
-
-Three documents give three different paths:
-
-- `/scratch/yetsion/tmp/` (#2, 2025)
-- `/scratch/ece882-xxx` — each account's own directory (#3, 2026)
-- `/scratch/ece882-001/` (#4, 2026)
-
-Under #3's per-account scheme, `ece882-001` would be **one specific account's**
-directory. Whether #4 intends it as a literal shared course path, or as a placeholder
-standing in for the reader's own `ece882-xxx`, cannot be determined — particularly since
-#4 pairs that concrete path with a generic `<your_username>` placeholder in the same
-command.
-
-### Conflict D — build on host or in guest
-
-Document 3 states explicitly that all building happens **inside the guest**, not on the
-host. No other document addresses this. Under the local-copy reading of #4, "host" and
-"guest" refer to different machines than under #3's server-side reading, so the
-instruction cannot be carried across without first settling Conflict A.
-
----
-
-## 4. Deliberately not chosen
-
-No host, path, account form, or launch method is recommended in this package.
-
-Recency does not settle it, because the newest document is internally inconsistent and
-contains at least one demonstrably stale element. Authority does not settle it either:
-`Project.pdf` is authoritative for **what the project must deliver**, which is a
-different question from **which machine the VM runs on**.
-
-Two sources can settle it, and both are obtainable quickly:
-
-| Question type | Settled by |
+| Fact | Value |
 |---|---|
-| Operational procedure — which host, which path, where QEMU runs | The partner's known working commands |
-| Assignment requirements — deliverables, thresholds, formats | `Project.pdf` and course staff |
+| Host | `naranja4`, account `ece882-025`, working dir `/scratch/ece882-025` |
+| Guest | QEMU/KVM — `systemd-detect-virt: kvm`, QEMU firmware, hypervisor flag present |
+| Host QEMU build | Ubuntu 24.04 (from the machine-type string) — **inferred, not confirmed** |
+| Guest OS | Ubuntu 22.04.5 LTS (Jammy) |
+| Guest kernel | `5.15.0-1106-kvm` (was `-1103-` before a reboot on ~09-13) |
+| CPU | Intel Xeon E5-2630 v3 @ 2.40 GHz, **1 vCPU** |
+| Reported cache | L1d/L1i 32 KiB, L2 4 MiB, L3 16 MiB — **synthesized by QEMU, not physical** |
+| RAM | 3.8 GiB, **no swap** |
+| Disk | 22 GB total, ~19 GB free |
+| Privilege | **root** (uid 0) |
+| Python (release) | 3.10.12 |
+| Python (debug) | 3.10.12, `Py_DEBUG=1`, `abiflags='d'`, `sys.gettotalrefcount` present |
+| Harness | pyperformance 1.14.0 — **80 runnable benchmarks** on this interpreter |
+| Profiler | perf 5.15.200, from `/usr/lib/linux-kvm-tools-5.15.0-1103` |
+| `perf_event_paranoid` | 4 — blocks unprivileged `perf_event_open`; we run as root |
+| `perf_event_max_sample_rate` | 100000 — no change needed |
+| Project root | `/root/sw-project` (`export HWSW_ROOT=/root/sw-project`) |
 
-Guessing in the meantime risks connecting to the wrong host or disturbing a working
-environment that took effort to build.
+### Two facts that constrain everything
+
+**One vCPU.** No parallelism-based optimizations. `--affinity` is meaningless. Any other
+process competes directly with the benchmark — this is not theoretical: two overlapping
+script runs produced a clean 2.02× measurement artifact on 2026-09-12. **Never run
+anything else on the VM while measuring.**
+
+**Reported cache sizes are fabricated by the hypervisor.** The guest reports 4 MiB L2
+and 16 MiB L3; a physical E5-2630 v3 has 256 KB L2 per core and 20 MB L3. Cite measured
+miss *counts* and *ratios* in the report. Never build an argument on cache *capacity*.
 
 ---
 
-## 5. What must be confirmed from the existing working environment
+## 2. Three measurement quirks — all verified by experiment
 
-To be answered by `scripts/vm_audit_minimal.sh`:
+These are report material, not troubleshooting notes. Each has an experiment behind it.
 
-| # | Question | Why it matters |
+### 2.1 PMU counting works; PMU sampling does not
+
+| Mode | Tool | Result |
 |---|---|---|
-| 1 | Are we inside a virtualized guest, or on a host? | Bears directly on Conflict A |
-| 2 | Distro release and kernel version | The Ubuntu version is inferred from an image filename and has never been verified |
-| 3 | CPU model and core count | Needed for the report's methodology section |
-| 4 | Is `python3-dbg` present, and is it a genuine debug build? | The specification's documented profiling command depends on it |
-| 5 | Release Python version | Relevant to the open question of which build the 7% is measured under |
-| 6 | Installed benchmark-harness version | Determines which command-line options exist |
-| 7 | The authoritative benchmark-name list for this install | Settles the `deepblue`/`deltablue` question and how `deepcopy` is exposed |
-| 8 | Where the benchmark sources live, and which candidate directories exist | Every constant in `benchmark_candidates.md` must be read from here |
-| 9 | Profiler version, and whether it matches the kernel | A mismatch produces confusing failures |
-| 10 | **Do hardware performance counters work?** | **Highest-impact unknown.** If only software events are available, the counter-based analysis the course teaches cannot be reproduced, and the measurement strategy must change. Interacts with Conflict A via nested virtualization |
-| 11 | Is flame-graph tooling already present, and in which form? | The third-party script pipeline and the profiler's native path are different routes to the same deliverable |
-| 12 | Is any HDL simulator already installed? | Determines whether simulating the accelerator is already possible |
+| Counting | `perf stat` | ✅ real values for cycles, instructions, cache, branches |
+| Sampling | `perf record -e cycles` | ❌ 0.003 MB, *"data has no samples!"* |
+| Sampling | `perf record -e cpu-clock` | ✅ 0.718 MB, **10,430 samples** |
 
-To be answered by the partner, not by a script:
+Same workload, same machine, one flag different. The virtualised PMU does not deliver
+the interrupt that sampling depends on; counting only reads counters at start and end.
 
-| # | Question | Resolves |
+**Consequence for the report:** profiles are sampled on `cpu-clock`, a timer-driven
+software event. **The flame graph shows where TIME goes, not where CYCLES go.** State
+this. Those differ when stalls are unevenly distributed.
+
+### 2.2 Requesting many counters at once silently zeroes one
+
+Asking for nine events in one pass multiplexes them on this vPMU. Whichever event loses
+the rotation reports a flat `0` with **no scaling annotation to warn you**.
+
+Proof that it is multiplexing and not an unsupported event: **the victim moves.** One
+run reported `cycles = 0`; another, with the identical event list, reported
+`branch-misses = 0`. `dmesg` confirms a working driver: *"Performance Events: Haswell
+events, full-width counters, Intel PMU driver."*
+
+**Fix in use:** three small passes instead of one large one —
+
+```
+group 1 : task-clock,context-switches,page-faults,cycles,instructions
+group 2 : cache-references,cache-misses
+group 3 : branches,branch-misses
+```
+
+Group 1 carries the software events plus the two fixed-counter events, so IPC always
+comes from one clean pass. Costs 3× the wall clock; returns numbers that are true.
+
+### 2.3 Frame-pointer unwinding produces fictional CPython stacks
+
+With the default `-g`, stacks came back with addresses like `0x300380014147c` appearing
+as the **parent** of `float_mul` — perf misreading Python's value stack as return
+addresses. The rendered flame graph was a single meaningless 600-pixel needle.
+
+`--call-graph dwarf` uses the debug info in `python3.10d` and produces correct stacks:
+`_PyEval_EvalFrameDefault` recursing into itself, which is what a Python call chain
+actually looks like.
+
+**Self% was correct all along; only the tree was fiction** — the frame-pointer run and
+the DWARF run agree on `_PyEval_EvalFrameDefault` self time to within one point
+(37.18% vs 36.77%).
+
+**Cost:** DWARF copies ~8 KB of stack per sample (measured: 19.6 MB for 2,434 samples).
+Sampling frequency is lowered to compensate. **Keep `-F` identical between a benchmark's
+baseline and its optimized variants**; it may differ between benchmarks.
+
+---
+
+## 3. VM access — RESOLVED
+
+Revision 1 documented three open conflicts between four guides. All are now closed.
+
+**Direct evidence:** the shell prompt `ece882-025@naranja4:/scratch/ece882-025`.
+
+**Course staff:** confirmed the current setup is correct.
+
+| Conflict (rev. 1) | Resolution |
+|---|---|
+| A — where QEMU runs | **On the assigned server**, from `/scratch/<account>`. Not copied to a local machine. |
+| B — `tangerine` vs `naranja` | **`naranja`**, assigned per account. `tangerine` is the 2025 infrastructure. |
+| C — image source path | **`/scratch/ece882-025`** — the account's own directory, per the per-account scheme. |
+| D — build on host or guest | **In the guest.** |
+
+The operative document is **`qemu-vm-guide.pdf` (May 2026)**.
+
+**The setup page in `Project.pdf` (August 2026) is stale.** It instructs copying the
+image to a local machine, which is not the current procedure, and its worked example
+profiles a benchmark that is not on this project's approved list. Worth mentioning to
+staff; it will mislead the next cohort.
+
+---
+
+## 4. Course staff rulings
+
+| Question | Ruling | Effect |
 |---|---|---|
-| 13 | The exact working connection procedure — the real commands typed, not a guide's version | Conflicts A, B, C |
-| 14 | Which host, and which account? | Conflicts B, C |
-| 15 | Does QEMU run on the server or on a local machine? | **Conflict A** |
-| 16 | Is the image copied, or already present in the assigned directory? | Conflict C |
-| 17 | Is there an existing working environment with the benchmark harness, and where? | Avoids duplicating work |
-| 18 | Is profiling or flame-graph tooling already set up, and where? | Avoids duplicating work |
-| 19 | Is the VM shared between both partners? | Measurement validity |
-| 20 | Is there a per-user disk quota? | Profiling output accumulates quickly |
-| 21 | Any environment quirks learned the hard way — permissions, sudo, session limits? | Avoids rediscovering them |
+| One hardware proposal or two? | **One component, total** | One accelerator for the project, not one per benchmark |
+| `python3-dbg` or release for the 7%? | **`python3-dbg`** | Confirms current practice; all figures come from the debug build |
+| VM procedure | Current setup is correct | §3 above |
+| `btree` / `deepblue` | Not needed, since only 2 are chosen | Moot — see note below |
+| **Is HDL simulation expected?** | **STILL UNANSWERED** | Determines whether a testbench is required work or optional polish |
+
+**On the approved table**, for the record: `btree` (row 11) does not exist in
+pyperformance 1.14.0 — not in the 97-benchmark manifest, not in any tag group. `deepblue`
+(row 12) is `deltablue`. Neither affects us.
 
 ---
 
-## 6. Questions for the partner
+## 5. Operational rules
 
-1. Walk through exactly how you connect and start the VM — the real commands you type.
-2. Which server, and which account?
-3. Does QEMU run on the server, or on your own machine?
-4. Was the image copied, or was it already in your assigned directory?
-5. What is already installed and working from previous coursework, and where does it
-   live?
-6. **Is the VM shared?** If both partners work on it simultaneously, measurements taken
-   during the other's activity are invalid. A convention is needed before any numbers
-   are collected.
-7. Is there a per-user disk quota?
-8. Anything that broke before and how you fixed it?
-
-## 7. Questions for course staff
-
-Listed in full in `docs/spec_checklist.md` §10. The two bearing on this file:
-
-- **Which guide is current for this semester** — `qemu-vm-guide.pdf` (May 2026) or the
-  setup page in `Project.pdf` (August 2026)? They give different instructions for where
-  QEMU runs.
-- Is the setup page in `Project.pdf` current, given that its worked example profiles a
-  benchmark absent from this project's approved list?
+1. **`export HWSW_ROOT=/root/sw-project`** — set in `~/.bashrc`. Everything lives there.
+2. **Always launch scripts from `/root/sw-project/baseline/scripts`.** pyperformance
+   builds its internal venv relative to the working directory; launching elsewhere
+   rebuilds it from scratch.
+3. **Use `tmux`.** Long runs survive a dropped connection, and it prevents the
+   duplicate-launch mistake that caused the 2.02× artifact.
+4. **Nothing else runs on the VM during a measurement.** One vCPU.
+5. **A reboot invalidates `ENVIRONMENT.txt`.** The kernel changed `-1103-` → `-1106-`
+   on ~09-13, and `kptr_restrict` resets. Regenerate with
+   `HWSW_ROOT=/root/sw-project bash .../01_setup.sh --yes` before quoting it in a report.
+6. **Never move a virtualenv.** Absolute paths are baked into `pyvenv.cfg` and every
+   shebang. Rebuild instead.
 
 ---
 
-## 8. Standing rule
+## 6. Known limitations to record in the report
 
-**The current specification and course staff govern the project requirements. The
-working VM is the source of truth only for the installed environment and available
-tools.**
+- Profiles are time-based (`cpu-clock`), not cycle-based. §2.1.
+- Kernel symbols do not resolve (`kptr_restrict`); kernel frames appear as hex. Cosmetic
+  for user-space Python profiling, and it resets on every reboot.
+- All figures are from a **debug build** of CPython, per staff ruling. `_Py_CheckSlotResult`
+  appears at ~1.8% of runtime and exists only in debug builds — the performance
+  distribution differs from release Python.
+- `perf stat` measures the **entire harness process**, including its venv setup and
+  calibration, not the benchmark alone. Use it for context; take the improvement figure
+  from pyperf's own mean ± stddev.
+- Guest cache topology is synthesized. §1.
 
-Practically:
+---
 
-- **Requirements** — deliverables, file names, the 7% threshold, report sections, HDL
-  language choice: `Project.pdf` and course staff decide. The VM has no say.
-- **Environment facts** — installed versions, available benchmark names, counter
-  support, present tooling: the audit output decides, and overrides any assumption
-  recorded in this package.
-- **Operational procedure** — host, path, where QEMU runs: unresolved. The partner's
-  working commands describe what currently works; course staff confirm what is
-  officially current. These may differ, and if they do, that difference is worth
-  raising rather than silently resolving.
+## 7. Still open
 
-Nothing in this file may be cited in a report until it carries a confirmation source.
+1. **Is HDL simulation expected?** One line to staff.
+2. Host QEMU being Ubuntu 24.04 is inferred from a machine-type string, not confirmed.
+   Harmless either way.
