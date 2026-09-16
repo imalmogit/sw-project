@@ -57,8 +57,42 @@ STAMP="$(date +%F_%H%M)"
 # ---------------------------------------------------------------------------
 RECORD_EVENT="${RECORD_EVENT:-cpu-clock}"
 
-# Hardware events for COUNTING -- these work; leave them alone.
-STAT_EVENTS="task-clock,context-switches,page-faults,cycles,instructions,cache-references,cache-misses,branches,branch-misses"
+# ---------------------------------------------------------------------------
+# CALL-GRAPH MODE: dwarf, not the default frame pointers
+#
+# Frame-pointer unwinding misreads CPython's value stack as return addresses.
+# Verified on this machine: stacks came back as garbage like 0x300380014147c
+# appearing as the PARENT of float_mul, and the flame graph rendered as one
+# meaningless 600-pixel needle. Self% was fine; the tree was fiction.
+#
+# DWARF unwinding uses the debug info in python3.10d and produces correct
+# stacks -- verified: _PyEval_EvalFrameDefault recursing into itself, which is
+# what a Python call chain actually looks like.
+#
+# COST: dwarf copies the user stack per sample, roughly 8 KB each. At -F 999
+# that is ~19 MB per 2.4 s of workload. The frequency is lowered to compensate;
+# a few thousand samples is ample for flame-graph shape.
+# ---------------------------------------------------------------------------
+CALLGRAPH="${CALLGRAPH:---call-graph dwarf}"
+RECORD_FREQ="${RECORD_FREQ:-199}"
+
+# ---------------------------------------------------------------------------
+# COUNTERS ARE COLLECTED IN SMALL GROUPS, NOT ALL AT ONCE
+#
+# This guest's vPMU has fewer physical counters than we want events. Ask for
+# nine at once and perf multiplexes them; whichever event loses the rotation
+# reports a flat 0 with no scaling annotation. Verified on this machine: the
+# same nine-event list reported cycles=0 on one run and branch-misses=0 on
+# another -- the victim moves, which is the signature of multiplexing rather
+# than an unsupported event.
+#
+# Three small passes cost three times the wall clock and return numbers that
+# are actually true. Group 1 carries the software events (no PMU pressure)
+# plus the two fixed-counter events, so IPC always comes from one clean pass.
+# ---------------------------------------------------------------------------
+STAT_GROUP_1="task-clock,context-switches,page-faults,cycles,instructions"
+STAT_GROUP_2="cache-references,cache-misses"
+STAT_GROUP_3="branches,branch-misses"
 
 say()  { printf '\n[baseline] %s\n' "$*"; }
 die()  { printf '\n[baseline] ABORT: %s\n' "$*" >&2; exit 1; }
@@ -139,19 +173,39 @@ else
 fi
 
 # --- 2. counters -----------------------------------------------------------
-say "[2/5] perf stat, $REPS repetitions (hardware counters -- counting mode)"
+say "[2/5] perf stat, $REPS repetitions x 3 counter groups"
 echo "  NOTE: this measures the WHOLE harness process, not just the benchmark."
 echo "  Useful for hotspot context; NOT the source of the improvement figure."
-perf stat -r "$REPS" -e "$STAT_EVENTS" \
-    python -m pyperformance run -b "$BENCH" \
-    > "$RES/perf_stat_stdout.txt" 2> "$RES/perf_stat.txt"
-tail -25 "$RES/perf_stat.txt"
+echo "  Three passes, because nine events at once get multiplexed on this"
+echo "  guest's vPMU and one of them silently reports 0."
+: > "$RES/perf_stat.txt"
+GN=0
+for GRP in "$STAT_GROUP_1" "$STAT_GROUP_2" "$STAT_GROUP_3"; do
+    GN=$((GN+1))
+    echo "  group $GN/3: $GRP"
+    {
+        echo "==================================================="
+        echo "COUNTER GROUP $GN : $GRP"
+        echo "==================================================="
+    } >> "$RES/perf_stat.txt"
+    perf stat -r "$REPS" -e "$GRP" \
+        python -m pyperformance run -b "$BENCH" \
+        >> "$RES/perf_stat_stdout.txt" 2>> "$RES/perf_stat.txt"
+done
+# A zero on a hardware counter now means "genuinely zero", not "multiplexed
+# out" -- so it is worth flagging rather than silently reporting.
+grep -E '^\s+0\s+(cycles|instructions|branches|branch-misses|cache-references|cache-misses)' \
+    "$RES/perf_stat.txt" >/dev/null 2>&1 \
+    && echo "  !! a hardware counter still reads 0 even ungrouped -- report this"
+grep -E 'insn per cycle|cycles|instructions' "$RES/perf_stat.txt" | head -8
 
 # --- 3. sampling profile ---------------------------------------------------
-say "[3/5] perf record, sampling on '$RECORD_EVENT'"
-echo "  Hardware-event sampling yields zero samples in this guest; see the"
-echo "  note at the top of this script. Record this in the report."
-perf record -e "$RECORD_EVENT" -F 999 -g -o "$RES/perf.data" -- \
+say "[3/5] perf record: event '$RECORD_EVENT', $CALLGRAPH, -F $RECORD_FREQ"
+echo "  Hardware-event sampling yields zero samples in this guest, and frame-"
+echo "  pointer unwinding produces fictional stacks. See the notes at the top"
+echo "  of this script, and record both in the report."
+# shellcheck disable=SC2086
+perf record -e "$RECORD_EVENT" -F "$RECORD_FREQ" $CALLGRAPH -o "$RES/perf.data" -- \
     python -m pyperformance run -b "$BENCH" \
     > "$RES/perf_record.log" 2>&1 \
     || echo "  (perf record returned non-zero -- check $RES/perf_record.log)"
