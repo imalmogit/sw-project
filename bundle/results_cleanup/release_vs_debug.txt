@@ -1,0 +1,24 @@
+=== nbody / debug (-n 100) ===
+          48477.18 msec task-clock                #    0.999 CPUs utilized            ( +-  0.03% )
+      115605668279      cycles                    #    2.384 GHz                      ( +-  0.03% )
+      293769854615      instructions              #    2.54  insn per cycle           ( +-  0.01% )
+           48.5300 +- 0.0212 seconds time elapsed  ( +-  0.04% )
+
+=== nbody / release (-n 100) ===
+          23186.90 msec task-clock                #    1.000 CPUs utilized            ( +-  0.21% )
+       55282727794      cycles                    #    2.385 GHz                      ( +-  0.20% )
+      170838845316      instructions              #    3.09  insn per cycle           ( +-  0.00% )
+           23.1939 +- 0.0478 seconds time elapsed  ( +-  0.21% )
+
+=== pyflate / debug (-n 20) ===
+          66223.45 msec task-clock                #    1.004 CPUs utilized            ( +-  0.23% )
+      157729685791      cycles                    #    2.393 GHz                      ( +-  0.24% )
+      348612512283      instructions              #    2.22  insn per cycle           ( +-  0.23% )
+            65.959 +- 0.155 seconds time elapsed  ( +-  0.24% )
+
+=== pyflate / release (-n 20) ===
+          23389.66 msec task-clock                #    0.989 CPUs utilized            ( +-  0.59% )
+       55698618082      cycles                    #    2.358 GHz                      ( +-  0.58% )
+      148766063507      instructions              #    2.64  insn per cycle           ( +-  0.56% )
+            23.641 +- 0.138 seconds time elapsed  ( +-  0.58% )
+
