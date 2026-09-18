@@ -1,0 +1,39 @@
+=== task-clock,context-switches,page-faults,cycles,instructions ===
+pyflate_opt2: Mean +- std dev: 2.64 sec +- 0.00 sec
+pyflate_opt2: Mean +- std dev: 2.62 sec +- 0.00 sec
+pyflate_opt2: Mean +- std dev: 2.65 sec +- 0.01 sec
+
+ Performance counter stats for '/root/sw-project/baseline/scripts/venv/cpython3.10-58f517067257-compat-31b33d68c68a/bin/python -u ./bm_pyflate_opt2/run_benchmark.py --worker -l 1 -w 1 -n 20' (3 runs):
+
+          55916.05 msec task-clock                #    1.005 CPUs utilized            ( +-  0.33% )
+               475      context-switches          #    8.544 /sec                     ( +-  9.83% )
+            127874      page-faults               #    2.300 K/sec                    ( +-  0.09% )
+      133109412062      cycles                    #    2.394 GHz                      ( +-  0.33% )
+      294081865608      instructions              #    2.22  insn per cycle           ( +-  0.16% )
+
+            55.656 +- 0.183 seconds time elapsed  ( +-  0.33% )
+
+=== cache-references,cache-misses ===
+pyflate_opt2: Mean +- std dev: 2.60 sec +- 0.00 sec
+pyflate_opt2: Mean +- std dev: 2.63 sec +- 0.01 sec
+pyflate_opt2: Mean +- std dev: 2.64 sec +- 0.00 sec
+
+ Performance counter stats for '/root/sw-project/baseline/scripts/venv/cpython3.10-58f517067257-compat-31b33d68c68a/bin/python -u ./bm_pyflate_opt2/run_benchmark.py --worker -l 1 -w 1 -n 20' (3 runs):
+
+         115882676      cache-references                                              ( +-  5.47% )
+          12515769      cache-misses              #   11.520 % of all cache refs      ( +-  0.12% )
+
+            55.309 +- 0.250 seconds time elapsed  ( +-  0.45% )
+
+=== branches,branch-misses ===
+pyflate_opt2: Mean +- std dev: 2.61 sec +- 0.00 sec
+pyflate_opt2: Mean +- std dev: 2.60 sec +- 0.00 sec
+pyflate_opt2: Mean +- std dev: 2.61 sec +- 0.00 sec
+
+ Performance counter stats for '/root/sw-project/baseline/scripts/venv/cpython3.10-58f517067257-compat-31b33d68c68a/bin/python -u ./bm_pyflate_opt2/run_benchmark.py --worker -l 1 -w 1 -n 20' (3 runs):
+
+       71880222637      branches                                                      ( +-  0.23% )
+         344727051      branch-misses             #    0.48% of all branches          ( +-  0.23% )
+
+           55.0887 +- 0.0914 seconds time elapsed  ( +-  0.17% )
+

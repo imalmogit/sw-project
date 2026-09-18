@@ -1,0 +1,346 @@
+# To display the perf.data header info, please use --header/--header-only options.
+#
+#
+# Total Lost Samples: 0
+#
+# Samples: 121  of event 'cpu-clock'
+# Event count (approx.): 608040125
+#
+# Overhead  Command  Shared Object                                Symbol                                    
+# ........  .......  ...........................................  ..........................................
+#
+    59.50%  python   nbody_core.cpython-310d-x86_64-linux-gnu.so  [.] __pyx_pf_10nbody_core_advance_c
+            |
+            ---__pyx_pf_10nbody_core_advance_c
+
+     2.48%  python   libc.so.6                                    [.] __memset_avx2_unaligned_erms
+            |
+            ---__memset_avx2_unaligned_erms
+               |          
+               |--1.65%--0xdddddddddddddddd
+               |          
+                --0.83%--0xfdfdfdfdfdfdfd6f
+
+     2.48%  python   libm.so.6                                    [.] __sqrt
+            |
+            ---__sqrt
+
+     2.48%  python   python3.10d                                  [.] _PyEval_EvalFrameDefault
+            |
+            ---_PyEval_EvalFrameDefault
+               |          
+               |--0.83%--0x1174003c0b6a007c
+               |          
+               |--0.83%--0x383000400040164
+               |          
+                --0.83%--0x183007c047c0001
+
+     2.48%  python   python3.10d                                  [.] _PyObject_VectorcallTstate.lto_priv.10
+            |
+            ---_PyObject_VectorcallTstate.lto_priv.10
+               |          
+                --0.83%--0x9afae0
+                          0x9a51c0
+
+     1.65%  python   python3.10d                                  [.] _PyUnicode_FromId
+            |
+            ---_PyUnicode_FromId
+               |          
+                --0.83%--0x9aeb40
+
+     1.65%  python   python3.10d                                  [.] lookdict_unicode_nodummy
+            |
+            ---lookdict_unicode_nodummy
+
+     1.65%  python   python3.10d                                  [.] r_object
+            |
+            ---r_object
+               |          
+                --0.83%--0x9af3a0
+
+     1.65%  python   python3.10d                                  [.] siphash24
+            |
+            ---siphash24
+
+     1.65%  python   python3.10d                                  [.] validate_list
+            |
+            ---validate_list
+
+     1.65%  python   python3.10d                                  [.] visit_decref
+            |
+            ---visit_decref
+               |          
+               |--0.83%--0x9acec0
+               |          
+                --0.83%--0x9aaf60
+
+     1.65%  python   [unknown]                                    [k] 0xffffffff86f5299d
+            |
+            ---0xffffffff86f5299d
+               0xffffffff87000124
+               |          
+               |--0.83%--__GI___tcgetattr
+               |          0
+               |          
+                --0.83%--__GI___readlink
+
+     0.83%  python   ld-linux-x86-64.so.2                         [.] check_match
+            |
+            ---check_match
+               0
+
+     0.83%  python   nbody_core.cpython-310d-x86_64-linux-gnu.so  [.] 0x0000000000003ac0
+            |
+            ---0x7fac0ca8bac0
+
+     0.83%  python   python3.10d                                  [.] PyUnicode_New
+            |
+            ---PyUnicode_New
+
+     0.83%  python   python3.10d                                  [.] _PyFrame_New_NoTrack
+            |
+            ---_PyFrame_New_NoTrack
+
+     0.83%  python   python3.10d                                  [.] _PyMem_DebugCheckAddress
+            |
+            ---_PyMem_DebugCheckAddress
+               0x4677615267756265
+
+     0.83%  python   python3.10d                                  [.] _PyMem_DebugRawAlloc
+            |
+            ---_PyMem_DebugRawAlloc
+               0xdddddddddddddddd
+               0
+
+     0.83%  python   python3.10d                                  [.] _PyObject_IsFreed
+            |
+            ---_PyObject_IsFreed
+               0x9acec0
+
+     0.83%  python   python3.10d                                  [.] _PyObject_Malloc
+            |
+            ---_PyObject_Malloc
+               0xdddddddddddddddd
+               0xdddddddddddddddd
+               0xdddddddddddddddd
+               0xdddddddddddddddd
+               0
+
+     0.83%  python   python3.10d                                  [.] _PyType_LookupId
+            |
+            ---_PyType_LookupId
+               0x7fac0c9faf30
+               0x9aeb40
+
+     0.83%  python   python3.10d                                  [.] _PyUnicode_CheckConsistency
+            |
+            ---_PyUnicode_CheckConsistency
+               0x6420776f6c6c6f66
+
+     0.83%  python   python3.10d                                  [.] arena_map_is_used
+            |
+            ---arena_map_is_used
+               0xdddddddddddddddd
+
+     0.83%  python   python3.10d                                  [.] dict_traverse.lto_priv.0
+            |
+            ---dict_traverse.lto_priv.0
+
+     0.83%  python   python3.10d                                  [.] find_name_in_mro.lto_priv.0
+            |
+            ---find_name_in_mro.lto_priv.0
+
+     0.83%  python   python3.10d                                  [.] gc_list_size
+            |
+            ---gc_list_size
+
+     0.83%  python   python3.10d                                  [.] get_unicode_state.lto_priv.0
+            |
+            ---get_unicode_state.lto_priv.0
+               0x9aee80
+
+     0.83%  python   python3.10d                                  [.] isnot_bitwise_or_rule
+            |
+            ---isnot_bitwise_or_rule
+
+     0.83%  python   python3.10d                                  [.] lookdict
+            |
+            ---lookdict
+
+     0.83%  python   python3.10d                                  [.] lookdict_split.lto_priv.0
+            |
+            ---lookdict_split.lto_priv.0
+               0x9aaf60
+
+     0.83%  python   python3.10d                                  [.] move_unreachable
+            |
+            ---move_unreachable
+               0x7fac0c880a90
+               0x215e1730
+               0x216d7d20
+               0x7fac0c8678d0
+               0x7fac0c878640
+               0x7fac0c8786a0
+               0x7fac0c878700
+               0x7fac0c8674c0
+               0x7fac0c878220
+               0x7fac0c863110
+               0x7fac0c863690
+               0x7fac0c863740
+               0x7fac0c8637f0
+               0x7fac0c867b00
+               0x217956a0
+               0x7fac0c867ab0
+               0x7fac0c878a60
+               0x7fac0c8638a0
+               0x7fac0c863cc0
+               0x7fac0c863d70
+               0x7fac0c863e20
+               0x7fac0c863ed0
+               0x7fac0c87c040
+               0x7fac0c87c0f0
+               0x7fac0c87c1a0
+               0x7fac0c87c250
+               0x7fac0c87c300
+               0x7fac0cd163b0
+               0x7fac0c878940
+               0x7fac0c978ca0
+               0x7fac0c879fc0
+               0x7fac0cfca9f0
+               0x7fac0c87a320
+               0x7fac0cc8bde0
+               0x7fac0c87a260
+               0x7fac0cfcab60
+               0x7fac0c87a1a0
+               0x2176e900
+               0x7fac0c879d20
+               0x7fac0cd16560
+               0x7fac0c87b040
+               0x7fac0cd16710
+               0x7fac0c87ac20
+               0x7fac0ca3e260
+               0x21799610
+               0x7fac0c866890
+               0x7fac0c87ba00
+               0x7fac0ca15080
+               0x7fac0c9efa60
+               0x7fac0cbe52d0
+               0x2
+               0x2
+               0x2
+               0x2
+               0x2
+               0x2
+               0x2
+               0x2
+               0x2
+               0x2
+               0x2
+               0x2
+               0x2
+               0x2
+               0x2
+               0x2
+               0x2
+               0x2
+               0x2
+               0x2
+               0x2
+               0x2
+               0x2
+               0x2
+               0x2
+               0x2
+               0x2
+               0x2
+               0x2
+               0x2
+               0x6
+               0x2
+               0x2
+               0x2
+               0x6
+               0x6
+               0x2
+               0x2
+               0x2
+               0x2
+               0x2
+               0x2
+               0x2
+               0x2
+               0x2
+               0x2
+               0x6
+               0x2
+               0x2
+               0x6
+               0x6
+               0x6
+               0x6
+               0x6
+               0x2
+               0x2
+               0x6
+               0x6
+               0x6
+               0x2
+               0x6
+               0x2
+               0x2
+               0x6
+               0x6
+               0x6
+               0x6
+               0x6
+               0x6
+               0x6
+               0x6
+               0x6
+               0x6
+               0x6
+               0x6
+               0x6
+
+     0.83%  python   python3.10d                                  [.] unsafe_latin_compare
+            |
+            ---unsafe_latin_compare
+               0x9a7640
+
+     0.83%  python   [unknown]                                    [k] 0xffffffff866c430a
+            |
+            ---0xffffffff866c430a
+               0xffffffff86f5258b
+               0xffffffff87000c04
+               pymalloc_pool_extend
+               0
+
+     0.83%  python   [unknown]                                    [k] 0xffffffff8688f5a9
+            |
+            ---0xffffffff8688f5a9
+               0xffffffff8688fbe4
+               0xffffffff8688fd26
+               0xffffffff866c435d
+               0xffffffff86f5258b
+               0xffffffff87000c04
+               _int_malloc
+
+     0.83%  python   [unknown]                                    [k] 0xffffffff868df594
+            |
+            ---0xffffffff868df594
+               0xffffffff868e157c
+               0xffffffff8688b75c
+               0xffffffff8688f6c7
+               0xffffffff8688fbe4
+               0xffffffff8688fd26
+               0xffffffff866c435d
+               0xffffffff86f5258b
+               0xffffffff87000c04
+               __memset_avx2_unaligned_erms
+               0xfdfdfdfdfdfdfd72
+
+
+
+#
+# (Cannot load tips.txt file, please install perf!)
+#
